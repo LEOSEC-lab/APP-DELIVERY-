@@ -1,0 +1,51 @@
+/* Mobile & WebView Specific Adjustments */
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #090d16;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.screen {
+    display: none;
+    animation: fadeIn 0.25s ease-out;
+}
+.screen.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px rgba(255, 77, 0, 0.6)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 30px rgba(255, 140, 0, 0.9)); }
+}
+
+.logo-pulse {
+    animation: pulseGlow 2.2s infinite ease-in-out;
+}
+
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
+.pt-safe { padding-top: env(safe-area-inset-top, 12px); }
+
+@keyframes radarPulse {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2.4); opacity: 0; }
+}
+.radar-ring {
+    animation: radarPulse 1.8s infinite ease-out;
+}

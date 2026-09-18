@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Fome Agora Delivery</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="text-gray-800 font-sans antialiased flex justify-center items-center h-screen w-screen">
+
+    <div class="w-full max-w-md bg-gray-50 h-full flex flex-col relative overflow-hidden shadow-2xl">
+
+        <!-- 1. SPLASH SCREEN (TELA DE CARREGAMENTO) -->
+        <div id="splash-screen" class="fixed inset-0 z-50 bg-gradient-to-br from-gray-950 via-gray-900 to-orange-950 flex flex-col items-center justify-between p-8 text-white transition-opacity duration-500">
+            <div></div>
+            
+            <div class="flex flex-col items-center text-center space-y-4">
+                <div class="w-40 h-40 p-2 flex items-center justify-center logo-pulse relative">
+                    <img src="https://raw.githubusercontent.com/LEOSEC-lab/APP-DELIVERY-/main/LOFO%20OFICIAL%20DO%20RAPIDEATS.png" 
+                         alt="Logo RapidEats" 
+                         class="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(255,77,0,0.6)]"
+                         onerror="this.onerror=null; this.src='https://placehold.co/180x180/ff4d00/ffffff?text=RapidEats';">
+                </div>
+
+                <div class="space-y-1">
+                    <h1 class="text-3xl font-black tracking-tight text-white drop-shadow-md">RAPIDEATS</h1>
+                    <p class="text-orange-200 text-xs font-semibold tracking-widest uppercase">Delivery Super Rápido</p>
+                </div>
+            </div>
+
+            <div class="w-full max-w-xs space-y-3 text-center pb-8">
+                <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden p-0.5 border border-orange-500/20">
+                    <div id="splash-bar" class="bg-gradient-to-r from-amber-400 to-brand-500 h-full rounded-full transition-all duration-1000 w-0 shadow-sm"></div>
+                </div>
+                <p class="text-xs text-orange-200/80 font-medium animate-pulse">Carregando o cardápio em tempo real...</p>
+            </div>
+        </div>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <main class="flex-1 overflow-y-auto no-scrollbar relative pb-20" id="main-content">
+
+            <!-- TELA 1: INÍCIO (HOME & RECOMENDAÇÕES) -->
+            <section id="screen-home" class="screen active">
+                <!-- Cabeçalho Topo -->
+                <div class="bg-gradient-to-r from-brand-600 via-brand-500 to-orange-500 text-white p-5 pt-6 rounded-b-3xl shadow-lg">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2.5 cursor-pointer" onclick="openAddressModal()">
+                            <div class="w-9 h-9 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white border border-white/20">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-orange-200 font-semibold uppercase tracking-wider block">Entregar em:</span>
+                                <div class="flex items-center gap-1 font-bold text-xs text-white leading-tight">
+                                    <span id="home-address-display" class="truncate max-w-[170px]">Rua das Flores, 123</span>
+                                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="showToast('Sem novas notificações no momento', 'info')" class="w-9 h-9 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center text-white relative active:scale-95 transition border border-white/20">
+                            <i class="fa-regular fa-bell text-sm"></i>
+                            <span class="w-2 h-2 bg-yellow-300 rounded-full absolute top-2 right-2 ring-2 ring-brand-500"></span>
+                        </button>
+                    </div>
+
+                    <!-- Busca Global -->
+                    <div class="relative mt-4">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-gray-400 text-xs"></i>
+                        <input type="text" placeholder="O que você quer saborear agora?" onkeyup="filterHomeSearch(this.value)" class="w-full bg-white text-gray-800 text-xs font-semibold pl-10 pr-4 py-3 rounded-2xl shadow-inner focus:outline-none placeholder-gray-400">
+                    </div>
+                </div>
+
+                <!-- Conteúdo Home -->
+                <div class="p-4 space-y-5">
+                    <!-- Banners Promocionais -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-black text-gray-800 text-sm">Destaques Especiais</h3>
+                            <span class="text-brand-500 text-[11px] font-bold">Ofertas</span>
+                        </div>
+                        
+                        <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x py-1">
+                            <div onclick="navigate('screen-menu')" class="snap-center shrink-0 w-72 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-4 text-white relative overflow-hidden shadow-md cursor-pointer active:scale-98 transition">
+                                <span class="bg-white/20 backdrop-blur-md text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">PROMOÇÃO DO DIA</span>
+                                <h2 class="text-lg font-black mt-2 leading-tight uppercase">Pizza em Dobro!</h2>
+                                <p class="text-[11px] text-amber-100 font-medium mt-0.5">Peça 1 Família e receba 2 em casa.</p>
+                                <button class="mt-3 bg-white text-orange-600 text-[11px] font-black px-3.5 py-1.5 rounded-xl shadow">Aproveitar Já</button>
+                                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&auto=format&fit=crop" class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full border-4 border-amber-300/40 object-cover" alt="Pizza">
+                            </div>
+
+                            <div onclick="applyPromoCoupon('FOME10')" class="snap-center shrink-0 w-72 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-4 text-white relative overflow-hidden shadow-md cursor-pointer active:scale-98 transition">
+                                <span class="bg-white/20 backdrop-blur-md text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">CUPOM R$10 OFF</span>
+                                <h2 class="text-lg font-black mt-2 leading-tight uppercase">Cupom Secreto</h2>
+                                <p class="text-[11px] text-emerald-100 font-medium mt-0.5">Use o código: <strong>FOME10</strong></p>
+                                <button class="mt-3 bg-white text-emerald-700 text-[11px] font-black px-3.5 py-1.5 rounded-xl shadow">Resgatar Cupom</button>
+                                <i class="fa-solid fa-ticket absolute -right-3 -bottom-3 text-7xl text-emerald-400/20"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categorias -->
+                    <div>
+                        <h3 class="font-black text-gray-800 text-sm mb-2.5">Categorias</h3>
+                        <div class="grid grid-cols-4 gap-2.5" id="home-category-grid"></div>
+                    </div>
+
+                    <!-- Lista Mais Pedidos -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-black text-gray-800 text-sm">Mais Vendidos 🔥</h3>
+                            <button onclick="navigate('screen-menu')" class="text-brand-500 text-xs font-bold">Ver tudo</button>
+                        </div>
+                        <div id="home-featured-list" class="space-y-3"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TELA 2: CARDÁPIO COMPLETO -->
+            <section id="screen-menu" class="screen">
+                <div class="sticky top-0 bg-white z-20 shadow-sm border-b border-gray-100">
+                    <div class="flex justify-between items-center p-4 pb-2">
+                        <button onclick="navigate('screen-home')" class="text-gray-600 text-base w-8 h-8 flex justify-center items-center rounded-full bg-gray-100">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <h2 class="font-black text-base text-gray-800">Nosso Cardápio</h2>
+                        <button onclick="navigate('screen-cart')" class="text-gray-700 text-base relative w-8 h-8 flex justify-center items-center rounded-full bg-gray-100">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span class="cart-badge absolute -top-1 -right-1 bg-brand-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtro de Categorias -->
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3" id="category-pills"></div>
+                </div>
+
+                <!-- Lista de Produtos -->
+                <div class="p-4 space-y-3" id="menu-product-list"></div>
+            </section>
+
+            <!-- TELA 3: CARRINHO E CHECKOUT -->
+            <section id="screen-cart" class="screen">
+                <div class="sticky top-0 bg-white z-20 shadow-sm border-b border-gray-100 flex justify-between items-center p-4">
+                    <button onclick="navigate('screen-menu')" class="text-gray-600 text-base w-8 h-8 flex justify-center items-center rounded-full bg-gray-100">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <h2 class="font-black text-base text-gray-800">Carrinho</h2>
+                    <button onclick="clearCart()" class="text-red-500 text-xs font-bold flex items-center gap-1 bg-red-50 px-2.5 py-1 rounded-lg">
+                        <i class="fa-regular fa-trash-can"></i> Limpar
+                    </button>
+                </div>
+
+                <div class="p-4 space-y-4">
+                    <!-- Lista de Itens -->
+                    <div id="cart-items-container" class="space-y-2.5"></div>
+
+                    <!-- Cupom de Desconto -->
+                    <div class="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
+                        <label class="text-[11px] font-bold text-gray-500 mb-1.5 block uppercase tracking-wider" for="coupon-input">Cupom de Desconto</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="coupon-input" placeholder="Digite FOME10" class="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold uppercase focus:outline-none focus:border-brand-500">
+                            <button onclick="applyCoupon()" class="bg-gray-900 text-white font-bold text-xs px-4 py-2 rounded-xl active:scale-95 transition">Aplicar</button>
+                        </div>
+                        <div id="coupon-feedback" class="text-[11px] font-medium mt-1.5 hidden"></div>
+                    </div>
+
+                    <!-- Endereço -->
+                    <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-sm space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-dot text-brand-500"></i> Endereço de Entrega
+                            </span>
+                            <button onclick="openAddressModal()" class="text-brand-500 text-xs font-bold hover:underline">Alterar</button>
+                        </div>
+                        <div id="cart-address-summary" class="text-xs font-medium text-gray-700 bg-gray-50 p-2.5 rounded-xl border border-gray-100"></div>
+                    </div>
+
+                    <!-- Forma de Pagamento -->
+                    <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-sm space-y-3">
+                        <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-wallet text-brand-500"></i> Pagamento
+                        </span>
+
+                        <div class="grid grid-cols-2 gap-2" id="payment-options">
+                            <button onclick="selectPayment('pix')" id="pay-option-pix" class="payment-btn border-2 border-brand-500 bg-brand-50 text-brand-700 p-2.5 rounded-xl flex items-center gap-2 transition">
+                                <i class="fa-brands fa-pix text-lg text-emerald-600"></i>
+                                <span class="text-xs font-extrabold">PIX (Online)</span>
+                            </button>
+
+                            <button onclick="selectPayment('credit')" id="pay-option-credit" class="payment-btn border border-gray-200 bg-white text-gray-700 p-2.5 rounded-xl flex items-center gap-2 transition">
+                                <i class="fa-solid fa-credit-card text-lg text-blue-600"></i>
+                                <span class="text-xs font-extrabold">Cartão Crédito</span>
+                            </button>
+
+                            <button onclick="selectPayment('debit')" id="pay-option-debit" class="payment-btn border border-gray-200 bg-white text-gray-700 p-2.5 rounded-xl flex items-center gap-2 transition">
+                                <i class="fa-solid fa-credit-card text-lg text-purple-600"></i>
+                                <span class="text-xs font-extrabold">Cartão Débito</span>
+                            </button>
+
+                            <button onclick="selectPayment('cash')" id="pay-option-cash" class="payment-btn border border-gray-200 bg-white text-gray-700 p-2.5 rounded-xl flex items-center gap-2 transition">
+                                <i class="fa-solid fa-money-bill-wave text-lg text-emerald-600"></i>
+                                <span class="text-xs font-extrabold">Dinheiro</span>
+                            </button>
+                        </div>
+
+                        <!-- Campo Troco -->
+                        <div id="cash-change-container" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-2.5 space-y-1.5">
+                            <label class="text-xs font-bold text-amber-900 block" for="cash-change-input">Precisa de troco para quanto?</label>
+                            <input type="number" id="cash-change-input" placeholder="Ex: R$ 50,00" class="w-full bg-white border border-amber-300 rounded-lg p-2 text-xs font-bold text-gray-800 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Resumo Valores -->
+                    <div class="bg-white border border-gray-200 rounded-2xl p-4 space-y-2 shadow-sm">
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal" class="font-bold text-gray-800">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>Taxa de Entrega:</span>
+                            <span id="cart-fee" class="font-bold text-gray-800">R$ 15,00</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-emerald-600 font-bold">
+                            <span>Desconto:</span>
+                            <span id="cart-discount">- R$ 0,00</span>
+                        </div>
+                        <hr class="my-2 border-gray-100">
+                        <div class="flex justify-between text-base font-black text-gray-900">
+                            <span>Total:</span>
+                            <span id="cart-total" class="text-brand-500 text-lg">R$ 15,00</span>
+                        </div>
+                    </div>
+
+                    <button onclick="proceedToPaymentModal()" class="w-full bg-brand-500 text-white font-extrabold py-3.5 rounded-2xl shadow-lg active:bg-brand-600 transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                        <i class="fa-solid fa-lock text-sm"></i> Confirmar e Pagar
+                    </button>
+                </div>
+            </section>
+
+            <!-- TELA 4: RASTREAMENTO COM MAPA GPS CANVAS EM TEMPO REAL -->
+            <section id="screen-tracking" class="screen">
+                <div class="bg-gray-900 text-white p-4 text-center space-y-1 shadow-md">
+                    <span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider">PEDIDO EM ANDAMENTO</span>
+                    <h2 class="font-black text-base text-white" id="tracking-order-id">Pedido #PED-4829</h2>
+                    <p class="text-[11px] text-gray-400" id="tracking-status-text">O restaurante está preparando seu pedido...</p>
+                </div>
+
+                <div class="relative w-full h-64 bg-gray-950 overflow-hidden shadow-inner">
+                    <canvas id="gps-canvas" class="w-full h-full block"></canvas>
+                    
+                    <div class="absolute top-3 left-3 bg-gray-900/90 backdrop-blur-md border border-gray-700 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>GPS em Tempo Real</span>
+                    </div>
+
+                    <button onclick="centerMapOnScooter()" class="absolute bottom-3 right-3 bg-gray-900/90 text-white w-8 h-8 rounded-full border border-gray-700 flex items-center justify-center shadow active:scale-95">
+                        <i class="fa-solid fa-location-crosshairs text-xs"></i>
+                    </button>
+                </div>
+
+                <div class="p-4 space-y-4">
+                    <div class="bg-amber-400 text-amber-950 rounded-2xl p-3.5 flex items-center justify-between font-bold shadow-sm">
+                        <div>
+                            <span class="text-[9px] font-extrabold uppercase tracking-wider block text-amber-900/80">Tempo Estimado</span>
+                            <span id="estimated-time-text" class="text-lg font-black leading-tight">20 - 30 minutos</span>
+                        </div>
+                        <div class="w-10 h-10 bg-amber-300/80 rounded-xl flex items-center justify-center text-amber-900 text-xl shadow-inner">
+                            <i class="fa-solid fa-motorcycle"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" class="w-11 h-11 rounded-full object-cover border-2 border-brand-500 shadow-sm" alt="Entregador">
+                            <div>
+                                <h4 class="font-extrabold text-xs text-gray-800">Marcos Silva (Entregador)</h4>
+                                <p class="text-[10px] font-semibold text-gray-500">Honda CG 160 Fan • Placa ABC-1234</p>
+                                <div class="flex items-center gap-1 text-[10px] text-amber-500 font-black mt-0.5">
+                                    <i class="fa-solid fa-star"></i> 4.9 (128 entregas)
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Ligando para o entregador Marcos...', 'info')" class="w-9 h-9 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center font-bold active:scale-95 border border-emerald-200">
+                            <i class="fa-solid fa-phone text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-4">
+                        <h4 class="font-black text-[10px] text-gray-400 uppercase tracking-wider">Etapas da Entrega</h4>
+                        
+                        <div class="relative pl-6 space-y-6 border-l-2 border-gray-200" id="tracking-timeline">
+                            <div class="relative" id="timeline-step-1">
+                                <div class="timeline-dot absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-emerald-500 text-white text-[10px] flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                                <h5 class="font-bold text-xs text-gray-800">Pedido Confirmado & Pago</h5>
+                                <p class="text-[10px] text-gray-500">Restaurante preparando os itens.</p>
+                            </div>
+
+                            <div class="relative" id="timeline-step-2">
+                                <div class="timeline-dot absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-brand-500 text-white text-[10px] flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-motorcycle"></i>
+                                </div>
+                                <h5 class="font-bold text-xs text-gray-800">Saiu para Entrega</h5>
+                                <p class="text-[10px] text-gray-500" id="step-2-desc">Acompanhe a moto em tempo real no mapa acima.</p>
+                            </div>
+
+                            <div class="relative opacity-40" id="timeline-step-3">
+                                <div class="timeline-dot absolute -left-[31px] top-0 w-6 h-6 rounded-full bg-gray-300 text-gray-600 text-[10px] flex items-center justify-center font-bold">
+                                    <i class="fa-solid fa-house"></i>
+                                </div>
+                                <h5 class="font-bold text-xs text-gray-800">Chegou ao Endereço</h5>
+                                <p class="text-[10px] text-gray-500">Receba o entregador na portaria/portão.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-100 rounded-2xl p-3.5 space-y-2 border border-gray-200 text-xs">
+                        <div class="flex justify-between text-gray-600 font-medium">
+                            <span>Endereço de Entrega:</span>
+                            <span class="font-bold text-gray-800 truncate max-w-[180px]" id="tracking-summary-address">Rua das Flores, 123</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600 font-medium">
+                            <span>Pagamento Realizado:</span>
+                            <span class="font-bold text-emerald-600" id="tracking-summary-payment">PIX - Aprovado</span>
+                        </div>
+                    </div>
+
+                    <button onclick="navigate('screen-home')" class="w-full bg-white border border-gray-300 text-gray-700 font-bold py-3 rounded-xl text-xs active:bg-gray-50">
+                        Voltar para a Página Inicial
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- MODAL DE PAGAMENTO PIX -->
+        <div id="payment-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-white w-full max-w-md rounded-t-3xl p-6 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <h3 class="font-black text-base text-gray-800">Finalizar Pagamento PIX</h3>
+                    <button onclick="closePaymentModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 font-bold flex items-center justify-center text-xs">✕</button>
+                </div>
+
+                <div class="text-center space-y-3 py-2">
+                    <span class="bg-emerald-100 text-emerald-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Aprovação Automática em Segundos</span>
+                    
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-2xl inline-block shadow-inner">
+                        <svg class="w-36 h-36 mx-auto text-gray-800" viewBox="0 0 100 100" fill="currentColor">
+                            <rect x="0" y="0" width="30" height="30" />
+                            <rect x="5" y="5" width="20" height="20" fill="white" />
+                            <rect x="10" y="10" width="10" height="10" />
+                            <rect x="70" y="0" width="30" height="30" />
+                            <rect x="75" y="5" width="20" height="20" fill="white" />
+                            <rect x="80" y="10" width="10" height="10" />
+                            <rect x="0" y="70" width="30" height="30" />
+                            <rect x="5" y="75" width="20" height="20" fill="white" />
+                            <rect x="10" y="80" width="10" height="10" />
+                            <rect x="35" y="5" width="10" height="20" />
+                            <rect x="50" y="15" width="15" height="10" />
+                            <rect x="40" y="35" width="20" height="20" />
+                            <rect x="65" y="40" width="25" height="15" />
+                            <rect x="35" y="70" width="15" height="25" />
+                            <rect x="60" y="75" width="30" height="10" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-bold text-gray-700">Total a pagar: <span class="text-brand-500 font-black text-sm" id="modal-pix-total">R$ 0,00</span></p>
+                        <p class="text-[11px] text-gray-400 mt-0.5">Copie o código abaixo e pague em seu banco:</p>
+                    </div>
+
+                    <div class="flex gap-2 bg-gray-100 p-2 rounded-xl border border-gray-200">
+                        <input type="text" readonly value="00020126580014BR.GOV.BCB.PIX0136fomeagora-delivery-pix-chave-fake5204000053039865802BR5925Fome Agora Delivery LTDA6009SAO PAULO62070503***6304E2CA" id="pix-code-input" class="flex-1 bg-transparent text-[10px] font-mono font-bold text-gray-600 truncate focus:outline-none">
+                        <button onclick="copyPixCode()" class="bg-gray-800 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg active:scale-95 transition">
+                            <i class="fa-regular fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="verifyFakePayment()" class="w-full bg-emerald-500 text-white font-black py-4 rounded-2xl shadow-lg active:bg-emerald-600 transition flex items-center justify-center gap-2 text-xs uppercase tracking-wider">
+                    <i class="fa-solid fa-circle-check text-base"></i> JÁ EFETUEI O PAGAMENTO
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL VALIDAÇÃO DE PAGAMENTO -->
+        <div id="loading-payment-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 text-white text-center hidden">
+            <div class="w-16 h-16 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <h3 class="font-black text-lg text-white mb-1">Verificando Pagamento...</h3>
+            <p class="text-xs text-gray-300 max-w-xs">Aguarde alguns segundos enquanto confirmamos com a sua instituição financeira.</p>
+        </div>
+
+        <!-- MODAL EDIÇÃO DE ENDEREÇO -->
+        <div id="address-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end justify-center hidden opacity-0 transition-opacity duration-300">
+            <div class="bg-white w-full max-w-md rounded-t-3xl p-6 space-y-3.5 max-h-[90vh] overflow-y-auto no-scrollbar shadow-2xl">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <h3 class="font-black text-base text-gray-800">Cadastrar Endereço</h3>
+                    <button onclick="closeAddressModal()" class="w-7 h-7 rounded-full bg-gray-100 text-gray-500 font-bold flex items-center justify-center text-xs">✕</button>
+                </div>
+
+                <form id="address-form" onsubmit="saveAddress(event)" class="space-y-3">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase" for="modal-street">Rua / Avenida *</label>
+                        <input type="text" id="modal-street" required placeholder="Ex: Alameda das Flores" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase" for="modal-number">Número *</label>
+                            <input type="text" id="modal-number" required placeholder="Ex: 123" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase" for="modal-neighborhood">Bairro *</label>
+                            <input type="text" id="modal-neighborhood" required placeholder="Ex: Centro" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase" for="modal-city">Cidade *</label>
+                            <input type="text" id="modal-city" required placeholder="Ex: São Paulo" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-500 uppercase" for="modal-complement">Complemento</label>
+                            <input type="text" id="modal-complement" placeholder="Ex: Apt 42" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-500 text-white font-black py-3.5 rounded-xl shadow-md active:bg-brand-600 transition text-xs uppercase tracking-wider mt-2">
+                        Salvar Endereço
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-16 pb-safe z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+            <button onclick="navigate('screen-home')" class="nav-btn flex flex-col items-center gap-1 w-16 text-brand-500" id="nav-screen-home">
+                <i class="fa-solid fa-house text-base"></i>
+                <span class="text-[10px] font-extrabold">Início</span>
+            </button>
+            <button onclick="navigate('screen-menu')" class="nav-btn flex flex-col items-center gap-1 w-16 text-gray-400" id="nav-screen-menu">
+                <i class="fa-solid fa-utensils text-base"></i>
+                <span class="text-[10px] font-extrabold">Cardápio</span>
+            </button>
+            <button onclick="navigate('screen-cart')" class="nav-btn flex flex-col items-center gap-1 w-16 text-gray-400 relative" id="nav-screen-cart">
+                <i class="fa-solid fa-cart-shopping text-base"></i>
+                <span class="cart-badge absolute top-0 right-3 bg-brand-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center hidden">0</span>
+                <span class="text-[10px] font-extrabold">Carrinho</span>
+            </button>
+            <button onclick="navigate('screen-tracking')" class="nav-btn flex flex-col items-center gap-1 w-16 text-gray-400" id="nav-screen-tracking">
+                <i class="fa-solid fa-location-arrow text-base"></i>
+                <span class="text-[10px] font-extrabold">GPS Moto</span>
+            </button>
+        </nav>
+
+        <!-- TOAST FLUTUANTE -->
+        <div id="toast" class="absolute top-5 left-1/2 -translate-x-1/2 bg-gray-900/95 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-2xl z-50 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none flex items-center gap-2 border border-gray-700 max-w-[90%] text-center">
+            <i class="fa-solid fa-circle-info text-brand-500" id="toast-icon"></i>
+            <span id="toast-message">Mensagem</span>
+        </div>
+
+    </div>
+
+    <!-- JS Externo -->
+    <script src="script.js"></script>
+</body>
+</html>
